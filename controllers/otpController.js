@@ -20,10 +20,10 @@ exports.verifyOtp = async (req, res) => {
 
     const { phone, otp } = req.body
 
-    const valid = await otpService.verifyOtp(phone, otp)
+    const result = await otpService.verifyOtp(phone, otp)
 
-    if (!valid) {
-      return res.status(400).json({ message: "Invalid OTP" })
+    if (!result.valid) {
+      return res.status(400).json({ message: result.message })
     }
 
     let user = await User.findOne({ phone })

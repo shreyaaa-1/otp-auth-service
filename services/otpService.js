@@ -1,7 +1,27 @@
 const axios = require('axios')
 const OTP = require('../models/otpModel')
 
+// Configuration
+const OTP_MAX_PER_WINDOW = parseInt(process.env.OTP_MAX_PER_WINDOW || 5)
+const OTP_BLOCK_HOURS = parseInt(process.env.OTP_BLOCK_HOURS || 5)
+
 async function createAndSendOtp(phone){
+  // Check rate limit: count OTPs created in the last OTP_BLOCK_HOURS
+  const timeWindowStart = new Date(Date.now() - OTP_BLOCK_HOURS * 60 * 60 * 1000)
+  const recentOtpCount = await OTP.countDocuments({
+    phone,
+    createdAt: { $gte: timeWindowStart }
+  })
+
+  // If limit exceeded, return 429 error
+  if (recentOtpCount >= OTP_MAX_PER_WINDOW) {
+    console.warn(`Rate limit exceeded for phone: ${phone}. Attempts: ${recentOtpCount}/${OTP_MAX_PER_WINDOW}`)
+    return {
+      status: 429,
+      message: `OTP limit reached. Try again after ${OTP_BLOCK_HOURS} hours.`
+    }
+  }
+
   const otp = Math.floor(100000 + Math.random()*900000).toString()
    console.log("Generated OTP:", otp) 
   await OTP.create({phone, otp})

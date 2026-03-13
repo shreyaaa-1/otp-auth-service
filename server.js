@@ -4,10 +4,12 @@ const cors = require("cors")
 const swaggerUi = require("swagger-ui-express")
 const swaggerJsdoc = require("swagger-jsdoc")
 
+
 require("dotenv").config()
 
 const app = express()
 
+app.use(express.static("public"))
 app.use(express.json())
 app.use(cors())
 

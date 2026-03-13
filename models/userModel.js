@@ -15,6 +15,11 @@ const userSchema = new mongoose.Schema({
 
   lastLogin: {
     type: Date
+  },
+
+  loginCount: {
+    type: Number,
+    default: 0
   }
 
 })

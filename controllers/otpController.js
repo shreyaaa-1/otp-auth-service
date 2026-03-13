@@ -3,6 +3,7 @@ const otpService = require('../services/otpService')
 
 exports.sendOtp = async (req, res) => {
   try {
+    console.log("Received request to send OTP with body:", req.body)
     const { phone } = req.body
     if (!phone) return res.status(400).json({ message: 'Phone is required' })
     const result = await otpService.createAndSendOtp(phone)

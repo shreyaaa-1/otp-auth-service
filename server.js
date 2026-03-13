@@ -21,17 +21,29 @@ const otpRoutes = require("./routes/otpRoutes")
 
 app.use("/api",otpRoutes)
 
-const options = {
- definition:{
-  openapi:"3.0.0",
-  info:{
-   title:"OTP API",
-   version:"1.0.0"
-  }
- },
- apis:["./routes/*.js"]
-}
+const userRoutes = require("./routes/userRoutes")
 
+app.use("/api", userRoutes)
+
+const options = {
+  definition: {
+    openapi: "3.0.0",
+    info: {
+      title: "OTP API",
+      version: "1.0.0"
+    },
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT"
+        }
+      }
+    }
+  },
+  apis: ["./routes/*.js"]
+}
 const specs = swaggerJsdoc(options)
 
 app.use("/api-docs",swaggerUi.serve,swaggerUi.setup(specs))
@@ -39,3 +51,4 @@ app.use("/api-docs",swaggerUi.serve,swaggerUi.setup(specs))
 app.listen(process.env.PORT,()=>{
  console.log("Server running on port",process.env.PORT)
 })
+
